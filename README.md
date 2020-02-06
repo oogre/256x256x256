@@ -54,7 +54,6 @@ E  S  A     ·     A  N  1  ·    ·    ·  0  7  /  0  2  /  2  0     ·     1 
 | **0** | `TAP`       | L’utilisateur __click avec un doigt__ sur un objet |
 | **1** | `DOUBLETAP` | L’utilisateur `TAP` __2x__ en peu de temps sur un objet |
 | **2** | `LONGTAP`   | L’utilisateur __presse un certain temps__ sur un objet |
-
 | **3** | `DRAG`      | L’utilisateur met un doigt sur un objet et le __glisse__ |
 | **4** | `DROPFILE`  | L’utilisateur, __glisse un fichier attendu à un endroit voulu__ |
 | **5** | `MOUSEENTER`    | L’utilisateur __fait entrer le curseur de souris__ sur un objet |
