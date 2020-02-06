@@ -59,7 +59,6 @@ E  S  A     ·     A  N  1  ·    ·    ·  0  7  /  0  2  /  2  0     ·     1 
 | **5** | `MOUSEENTER`    | L’utilisateur __fait entrer le curseur de souris__ sur un objet |
 | **6** | `MOUSELEAVE`  | L’utilisateur __fait sortir le curseur de souris__ d'un objet |
 | **7** | `KEYUP`     | L’utilisateur __relache une touche spécifique du clavier__  |
-
 | **8** | `KEYDOWN`     | L’utilisateur __appuie une touche spécifique du clavier__ |
 | **9** | `HIDE`     | L’utilisateur __cache__ la fenêtre du son navigateur |
 | **A** | `SHOW`      | L’utilisateur __affiche__ la fenêtre du son navigateur |
