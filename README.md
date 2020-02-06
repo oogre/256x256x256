@@ -121,10 +121,13 @@ La colonne Acronyme vous identifie, elle contient des trigrammes composés au mo
 
 
 ```javascript
-(new Array(256))                                                    // nouveau Tableau de 256 case
+let nEtudiant = ...... ; 
+let espaceParEtudiant = 10;
+
+(new Array(espaceParEtudiant * nEtudiant))                          // nouveau Tableau de xxxx case
 .fill(0)                                                            // ce tableau est remplit de zéros
 .map((e, k)=> (
-    "0x" + (k < 16 ? "0" : "") + (k.toString(16)).toUpperCase()     // remplace lez zéros par le numéros de la case converti en hexa
+    "0x" + ((k%256) < 16 ? "0" : "") + ((k%256).toString(16)).toUpperCase()     // remplace lez zéros par le numéros de la case converti en hexa
 ))
 .sort(() => Math.random() - 0.5)                                    // on mélange le tableau
 .sort(() => Math.random() - 0.5)                                    // on mélange le tableau
@@ -132,7 +135,7 @@ La colonne Acronyme vous identifie, elle contient des trigrammes composés au mo
 .sort(() => Math.random() - 0.5)
 .sort(() => Math.random() - 0.5)
 .join("")                                                           // le tableau est fusionné en une string
-.match(new RegExp(".{1,"+ 10*4 +"}","g"))                           // coupe la string tous les 40 char
+.match(new RegExp(".{1,"+ espaceParEtudiant*4 +"}","g"))                            // coupe la string tous les 40 char
 .map(e=>(
     e.match(new RegExp(".{1,"+ 4 +"}","g"))                         // chaque sous-element est coupé tous les 4 char 
     .join(" | ")                                                    // fusion des sous-sous-èlément par un pipe
