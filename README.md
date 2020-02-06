@@ -31,7 +31,7 @@ E  S  A     ·     A  N  1  ·    ·    ·  0  7  /  0  2  /  2  0     ·     1 
 * **Quantité :** chacun de vous développe au minimum 10 espaces interactifs
 * **Interaction :** chaque espace interactif demande à l'utilisateur de produire 2 actions dans un certain ordre
 
-<img src="./public/images/interactions.jpg" alt="alt text" height="500">
+<img src="./public/images/2020.interactions.jpg" alt="tableau d'interaction" height="500">
 
 ### EN CLASSE :   
 * Nous explorons chacune des 16 interactions :
@@ -142,7 +142,6 @@ let espaceParEtudiant = 10;
 )) 
 .join("\n")                                                         // fusion des sous-èlément par un retour à la ligne
 ```
-[TEST your apps](./test.app.md)
 
 ### LIEN VERS L'APP :
 
