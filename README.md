@@ -119,6 +119,26 @@ La colonne Acronyme vous identifie, elle contient des trigrammes composés au mo
 | **ATÜ** | |
 | **MVA** | |
 
+
+```javascript
+(new Array(256))                                                    // nouveau Tableau de 256 case
+.fill(0)                                                            // ce tableau est remplit de zéros
+.map((e, k)=> (
+    "0x" + (k < 16 ? "0" : "") + (k.toString(16)).toUpperCase()     // remplace lez zéros par le numéros de la case converti en hexa
+))
+.sort(() => Math.random() - 0.5)                                    // on mélange le tableau
+.sort(() => Math.random() - 0.5)                                    // on mélange le tableau
+.sort(() => Math.random() - 0.5)
+.sort(() => Math.random() - 0.5)
+.sort(() => Math.random() - 0.5)
+.join("")                                                           // le tableau est fusionné en une string
+.match(new RegExp(".{1,"+ 10*4 +"}","g"))                           // coupe la string tous les 40 char
+.map(e=>(
+    e.match(new RegExp(".{1,"+ 4 +"}","g"))                         // chaque sous-element est coupé tous les 4 char 
+    .join(" | ")                                                    // fusion des sous-sous-èlément par un pipe
+)) 
+.join("\n")                                                         // fusion des sous-èlément par un retour à la ligne
+```
 [TEST your apps](./test.app.md)
 
 ### LIEN VERS L'APP :
