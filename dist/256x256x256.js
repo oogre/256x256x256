@@ -375,8 +375,8 @@ class InteractionHelper {
     }
 
     mousePos = {
-      mouseX: event.pageX,
-      mouseY: event.pageY
+      mouseX: event.pageX - (window.innerWidth * 0.5 - document.body.clientWidth * 0.5),
+      mouseY: event.pageY - (window.innerHeight * 0.5 - document.body.clientHeight * 0.5)
     };
   }
 
@@ -5138,9 +5138,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   256^3 - main.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2020-02-06 23:16:10
-  @Last Modified time: 2020-02-06 23:22:09
+  @Last Modified time: 2020-02-21 17:36:24
 \*----------------------------------------*/
-window.Animator = _AppManager.default;
+window.Animator = _Animator.default;
 window.AppManager = _AppManager.default;
 window.InteractionHelper = _InteractionHelper.default;
 },{"./Animator.js":1,"./AppManager.js":2,"./InteractionHelper.js":3}],7:[function(require,module,exports){

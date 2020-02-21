@@ -2,7 +2,7 @@
   256x256x256 - index.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2020-02-06 12:19:52
-  @Last Modified time: 2020-02-06 23:24:48
+  @Last Modified time: 2020-02-21 17:34:47
 \*----------------------------------------*/
 import interact from "./libs/interact/interact.1.3.4.min.js";
 import Hammer from "./libs/hammer/hammer.2.0.8.min.js";
@@ -255,10 +255,10 @@ class InteractionHelper {
               (doc && doc.clientTop  || body && body.clientTop  || 0 );
         }
 
-        mousePos = {
-    		mouseX: event.pageX,
-        	mouseY: event.pageY
-        };
+		mousePos = {
+			mouseX: event.pageX - ((window.innerWidth * 0.5) - (document.body.clientWidth * 0.5)),
+			mouseY: event.pageY - ((window.innerHeight * 0.5) - (document.body.clientHeight * 0.5))
+		};
     }
 }
 
