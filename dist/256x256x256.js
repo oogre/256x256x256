@@ -114,11 +114,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
+var _InteractionHelper = _interopRequireDefault(require("./InteractionHelper.js"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 /*----------------------------------------*\
   256^3 - AppManager.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2020-02-06 23:01:04
-  @Last Modified time: 2020-02-06 23:23:01
+  @Last Modified time: 2020-02-21 15:25:23
 \*----------------------------------------*/
 class AppManager {
   static levelComplete() {
@@ -132,7 +136,7 @@ class AppManager {
   }
 
   static trigDOMContentLoaded() {
-    document.addEventListener("mousemove", AppManager.handleMouseMove);
+    document.addEventListener("mousemove", _InteractionHelper.default.handleMouseMove);
 
     for (let action of AppManager.listeners.DOMContentLoaded) {
       action();
@@ -147,7 +151,7 @@ AppManager.listeners = {
 document.addEventListener("DOMContentLoaded", AppManager.trigDOMContentLoaded);
 var _default = AppManager;
 exports.default = _default;
-},{}],3:[function(require,module,exports){
+},{"./InteractionHelper.js":3}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
