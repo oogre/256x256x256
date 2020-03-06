@@ -2,7 +2,7 @@
   256x256x256 - index.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2020-02-06 12:19:52
-  @Last Modified time: 2020-02-21 17:34:47
+  @Last Modified time: 2020-02-28 14:47:56
 \*----------------------------------------*/
 import interact from "./libs/interact/interact.1.3.4.min.js";
 import Hammer from "./libs/hammer/hammer.2.0.8.min.js";
@@ -149,20 +149,20 @@ class InteractionHelper {
 	}
 
 	static onWindowResize(action){
-		window.addEventListener(
+		top.addEventListener(
 			'resize', 
 			event => 	action({
 							type : event.type,
 							...mousePos,
-							width : window.innerWidth,
-							height : window.innerHeight,
+							width : top.innerWidth,
+							height : top.innerHeight,
 						}),
 			false
 		);
 	}
 
 	static onBeforePrint(action){
-		window.addEventListener(
+		top.addEventListener(
 			'beforeprint', 
 			event => 	action({
 							target : event.target,
@@ -237,7 +237,7 @@ class InteractionHelper {
     static handleMouseMove(event) {
     	var dot, eventDoc, doc, body, pageX, pageY;
 
-        event = event || window.event; // IE-ism
+        event = event || top.event; // IE-ism
 
         // If pageX/Y aren't available and clientX/Y are,
         // calculate pageX/Y - logic taken from jQuery.

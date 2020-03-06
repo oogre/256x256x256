@@ -2,141 +2,234 @@
   256x256x256 - script.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2018-02-27 12:27:03
-  @Last Modified time: 2019-01-29 18:17:55
+  @Last Modified time: 2020-02-28 19:44:42
 \*----------------------------------------*/
-let availableLVL = ["0x00"];//(new Array(256)).fill().map((p, k)=>{k = k.toString(16);while(k.length<2) k = "0"+k;return "0x"+k});
-let historyLVL = [];
-let failTimeout ;
-let failAfter = 140000;
-let scoreDom;
-let totalDom;
-let winDom;
-let reloadDom;
-let iframeDom;
-let iframeWrapperDom;
-let lvlDom;
-let flagNext = false;
-document.addEventListener("DOMContentLoaded", setup);
-window.onmessage = onMessageFromLVL;
 
-function setup(){
-	lvlDom = document.getElementsByClassName("lvl")[0];
-	winDom = document.getElementsByClassName("win")[0];
-	scoreDom = document.getElementsByClassName("score")[0];
-	totalDom = document.getElementsByClassName("total")[0];
-	iframeDom = document.getElementsByTagName("IFRAME")[0];
-	reloadDom = document.getElementsByClassName("hidden")[0];
-	iframeWrapperDom = document.getElementsByClassName("wrapper")[0];
-	iframeDom.onload = onLevelLoaded;
-	totalDom.innerText = availableLVL.length;
-	requestAnimationFrame(runAnimator);
-	nextLVL();
-}
-function reload(){
-	location.reload();
-}
+const FAIL_AFTER = 14000;
+const LEVELS = [
+	"0x0", "0x1", "0x2", "0x3", 
+	"0x4", "0x5", "0x6", "0x7", 
+	"0x8", "0x9", "0xA", "0xB", 
+	"0xC", "0xD", "0xE", "0xF"
+];
 
-function onMessageFromLVL (e){
-	if(e.data == "SUCCESS" && flagNext){
-		flagNext = false;
-		clearTimeout(failTimeout);
-		nextLVL();
-	}
-}
+AppManager.ready(() => {
+	LevelManager = LevelManager();
+	LevelManager.next();
+});
 
-function gameOver(success){
-	let anim;
-	if(success){
-		winDom.innerText = "YOU WIN";
-		anim = function(){
-			win(winDom);
+let LevelManager = () => {
+	let historyLVL = [];
+	let availableLVL = LEVELS;//(new Array(256)).fill().map((p, k)=>{k = k.toString(16);while(k.length<2) k = "0"+k;return "0x"+k});
+	
+	let isValidated = false;
+	let iframeDom = document.querySelector("iframe");
+	let iframeWrapperDom = document.querySelector(".wrapper");
+	
+	document.querySelector(".total").innerText = availableLVL.length;
+
+	window.addEventListener("message", (event) => {
+		if(event.data == "SUCCESS" && !isValidated){
+			isValidated = true;
+			onLevelSuccess();
 		}
-	}else{
-		reloadDom.classList.remove("hidden");
-		winDom.innerText = "YOU LOOSE";	
-		anim = function(){
-			loose(winDom);
-		}
+	}, false);
+
+	const requestLevel = (levelName) => {
+		let parent = iframeDom.parentElement;
+		parent.removeChild(iframeDom);
+		iframeDom = document.createElement("iframe");
+		iframeDom.setAttribute("src", "./../../levels/"+levelName+"/index.html");
+		parent.appendChild(iframeDom);
+		iframeDom.addEventListener('load', ()=>{
+			isValidated=false;
+			onLevelLoaded();
+		}, false);
+		iframeDom.focus();
 	}
-	Close(anim);
+
+	return ({
+		next : () => {
+			const levelName = availableLVL.splice(Math.floor(Math.random() * availableLVL.length), 1)[0];
+			document.querySelector(".score").innerText =historyLVL.length;
+			historyLVL.push(levelName);
+			if(!levelName) {
+				onGameWin();
+				return false;
+			}
+			document.querySelector(".lvl").innerText = levelName;
+			requestLevel(levelName);
+		},
+		prev : () => {
+			availableLVL.push(historyLVL.pop());
+			const levelName = historyLVL[historyLVL.length-1];
+			document.querySelector(".score").innerText = historyLVL.length;
+			if(!levelName) {
+				onGameLoose();
+				return false;
+			}
+			document.querySelector(".lvl").innerText = levelName;
+			requestLevel(levelName);
+		},
+		size : (ratio) => {
+			iframeWrapperDom.style.height = ((ratio) * 256)+"px";
+			iframeDom.style.marginTop = (-1 * (1-ratio) * 128)+"px";
+		}
+	});
+};
+
+const onLevelLoaded = () => {
+	clearTimeout(window.TIMEOUT_OPENNING);
+	window.TIMEOUT_OPENNING = setTimeout( () => {
+		Animations.Open(() => {
+			clearTimeout(window.TIMEOUT_FAIL);
+			window.TIMEOUT_FAIL = setTimeout(onLevelFail, FAIL_AFTER);
+		});
+	}, 750);
 }
 
-function nextLVL(){
-	let lvl = getRandomLVL();
-	if(isGameOver(lvl)){
-		setScore2Display();
-		return gameOver(true);//with success
-	}
-	setLvl2Display(lvl);
-	Close(function(){
-		Magnify(375, scoreDom);
-		setScore2Display();
-		setLevel(lvl);
+const onLevelSuccess = () => {
+	Animations.Close(function(){
+		Animations.Magnify(375, document.querySelector(".score"));
+		LevelManager.next();
 	});
 }
 
-function prevLVL(){
-	flagNext = false;
-	let lvl = getLastLVL();
-	if(isGameOver(lvl)){
-		setScore2Display();
-		return gameOver(false);//without success
-	}
-	setLvl2Display(lvl);
-	Close(function(){
-		Minify(375, scoreDom);
-		setScore2Display();
-		setLevel(lvl);
+const onLevelFail = () => {
+	Animations.Close(function(){
+		Animations.Minify(375, document.querySelector(".score"));
+		LevelManager.prev();
 	});
 }
 
-function runAnimator(){
-	Animator.update();
-	requestAnimationFrame(runAnimator);
+const onGameWin = () => {
+	const winDom = document.querySelector(".win");
+	winDom.innerText = "YOU WIN";
+	Animations.Win(winDom);
 }
 
-function onLevelLoaded(){
-	if(iframeDom.src && !flagNext){
-		flagNext = true;
-		setTimeout(function(){
-			Open(function(){
-				clearTimeout(failTimeout);
-				failTimeout = setTimeout(prevLVL, failAfter);
-			});
-		}, 750);
+const onGameLoose = () => {
+	document.querySelector(".reload").classList.remove("hidden");
+	const winDom = document.querySelector(".win");
+	winDom.innerText = "YOU LOOSE";	
+	Animations.Loose(winDom);
+}
+
+const lerp = (A, B, t) => {
+	return A + t * (B - A);
+}
+
+const Animations = {
+	Magnify : (time, target) => {
+		new Animator({
+			duration : time*2,
+			atStarting : () => {
+				this.FS = 20;
+			},
+			atRunning : ({cursor}) => {
+				let percent = cursor;
+				target.style.fontSize = (this.FS + 20 * Math.sin(Math.PI * percent)) + "px";
+			},
+			atStoping : () => {
+				target.style.fontSize = this.FS + "px";
+			}
+		}).start();
+	},
+	Minify : (time, target) => {
+		new Animator({
+			duration : time*2,
+			atStarting : () => {
+				this.FS = 20;
+			},
+			atRunning : ({cursor}) => {
+				let percent = cursor;
+				target.style.fontSize = (this.FS - 10 * Math.sin(Math.PI * percent)) + "px";
+			},
+			atStoping : () => {
+				target.style.fontSize = this.FS + "px";
+			}
+		}).start();
+	},
+	Loose : (target) => {
+		new Animator({
+			duration : 1500,
+			atStarting : () => {
+				this.FS = 20;
+			},
+			atRunning : ({cursor}) => {
+				let percent = cursor;
+				percent = Math.pow(percent, 0.3);
+				target.style.fontSize = (this.FS + 50 * Math.sin(
+															Math.PI * lerp(
+																1, 0.95, lerp(
+																	1, 0.2, Math.abs(
+																		Math.sin(
+																			0.3 * percent*2*Math.PI
+																		)
+																	)
+																)
+															)
+														)
+										) + "px";
+			},
+			atStoping : () => {
+				target.style.fontSize = this.FS + "px";
+				this.start();
+			}
+		}).start();
+	},
+	Win : (target) => {
+		new Animator({
+			duration : 500,
+			atStarting : () => {
+				this.FS = 20;
+			},
+			atRunning : ({cursor}) => {
+				let percent = cursor;
+				target.style.fontSize = (this.FS + 50 * Math.sin(
+															-1 * Math.PI * lerp(
+																1, 0.95, lerp(
+																	1, 0.2, Math.abs(
+																		Math.sin(
+																			0.3 * percent*2*Math.PI
+																		)
+																	)
+																)
+															)
+														)
+										) + "px";
+			},
+			atStoping : () => {
+				target.style.fontSize = this.FS + "px";
+				this.start();
+			}
+		}).start();
+	},
+	Close : (callback) => {
+		new Animator({
+			duration : 500,
+			atRunning : ({cursor}) => {
+				let percent = Math.pow(cursor, 0.5);
+				LevelManager.size(1 - percent);
+			},
+			atStoping : () => {
+				LevelManager.size(0);
+				if(callback)callback();
+			}
+		}).start();
+	},
+	Open : (callback) => {
+		new Animator({
+			duration : 500,
+			atRunning : ({cursor}) => {
+				let percent = Math.pow(cursor, 2)
+				LevelManager.size(percent);
+			},
+			atStoping : () => {
+				LevelManager.size(1);
+				if(callback)callback();
+			}
+		}).start();
 	}
 }
 
-function isGameOver(lvl){
-	return undefined == lvl;
-}
-
-function getLastLVL(){
-	availableLVL.push(historyLVL.pop());
-	return historyLVL[historyLVL.length-1];
-}
-
-function getRandomLVL(){
-	// return level name 
-	// or
-	// return undefined in case of no more level
-	let currentLvl = availableLVL.splice(Math.floor(Math.random() * availableLVL.length), 1)[0];
-	if(undefined != currentLvl){
-		historyLVL.push(currentLvl);
-	}
-	return currentLvl; 
-}
-
-function setLvl2Display(lvl){
-	lvlDom.innerText = lvl;
-}
-
-function setScore2Display(){
-	let score = historyLVL.length - 1;
-	scoreDom.innerText = score>0 ? score : 0  ;
-}
-
-function setLevel(lvl){
-	console.log(lvl);
-	iframeDom.src = "../"+lvl+"/index.html";
-}
